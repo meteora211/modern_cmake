@@ -1,1 +1,1 @@
-# modern_cmake
+# Modern CMake for C++
