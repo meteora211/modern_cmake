@@ -19,6 +19,7 @@ message(STATUS "PROJECT_VERSION_MINOR: ${PROJECT_VERSION_MINOR}")
 message(STATUS "PROJECT_VERSION_PATCH: ${PROJECT_VERSION_PATCH}")
 message(STATUS "PROJECT_VERSION_TWEAK: ${PROJECT_VERSION_TWEAK}")
 
+include(cars/cars.cmake)
 add_executable(car
                main.cpp
-               cars/car.cpp)
+               ${CAR_SOURCES})
