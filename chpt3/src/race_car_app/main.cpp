@@ -1,6 +1,6 @@
-#include "cars/car.h"
+#include "race_car.h"
 
 int main() {
-  Car volvo;
+  RaceCar volvo;
   std::cout << volvo.honk() << std::endl;
 }

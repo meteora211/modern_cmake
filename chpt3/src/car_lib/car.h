@@ -4,5 +4,5 @@
 
 class Car{
 public:
-  std::string honk() const;
+  virtual std::string honk() const;
 };
