@@ -4,6 +4,7 @@ project(BankApp CXX)
 add_executable(terminal terminal_app.cpp)
 add_executable(gui gui_app.cpp)
 
+# set target properties
 set_target_properties(gui PROPERTIES
                     CXX_STANDARD 20
                     COMPILE_FLAGS -Wno-unused)
@@ -14,6 +15,9 @@ target_link_libraries(gui calculations drawing)
 add_library(calculations calculations.cpp)
 add_library(drawing drawing.cpp)
 
+# custom target
+# XXX: custom target is EXCLUDE_FROM_ALL by default, and need
+# manually specify created files via BYPRODUCTS for cmake clean
 add_custom_target(checksum ALL
                   COMMAND sh -c "cksum terminal>terminal.ck"
                   COMMAND sh -c "cksum gui>gui.ck"
@@ -23,6 +27,7 @@ add_custom_target(checksum ALL
 
 add_dependencies(checksum terminal gui)
 
+# get target properties
 get_target_property(GUI_CFLAGS gui COMPILE_FLAGS)
 message(STATUS "GUI_CFLAGS: ${GUI_CFLAGS}")
 
@@ -63,5 +68,21 @@ get_target_property(destination_lib_ver destination LIB_VERSION)
 message(STATUS "destination_cdefs: ${destination_cdefs}")
 message(STATUS "destination_copts: ${destination_copts}")
 message(STATUS "destination_lib_ver: ${destination_lib_ver}")
+# XXX: use add_custom_target to print msg during generation stage
+add_custom_target(gendbg ALL
+  COMMAND ${CMAKE_COMMAND} -E echo \"COMPILE_DEFINITIONS: $<TARGET_PROPERTY:destination,COMPILE_DEFINITIONS>\"
+  COMMAND ${CMAKE_COMMAND} -E echo \"COMPILE_OPTIONS: $<TARGET_PROPERTY:destination,COMPILE_OPTIONS>\"
+  COMMAND ${CMAKE_COMMAND} -E echo \"LIB_VERSION: $<TARGET_PROPERTY:destination,LIB_VERSION>\"
+)
 
+# EXCLUDE_FROM_ALL test
 add_executable(efa EXCLUDE_FROM_ALL empty.cpp)
+
+# custom command
+add_executable(custom_command custom_command.cpp constant.h)
+target_include_directories(custom_command PRIVATE ${CMAKE_BINARY_DIR})
+add_custom_command(OUTPUT constant.h
+  COMMAND cp ARGS "${CMAKE_SOURCE_DIR}/template.inc" constant.h)
+add_custom_command(TARGET custom_command POST_BUILD
+                   COMMAND cksum
+                   ARGS "$<TARGET_FILE:custom_command>" > "custom_command.ck")
