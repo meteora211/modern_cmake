@@ -69,7 +69,7 @@ message(STATUS "destination_cdefs: ${destination_cdefs}")
 message(STATUS "destination_copts: ${destination_copts}")
 message(STATUS "destination_lib_ver: ${destination_lib_ver}")
 # XXX: use add_custom_target to print msg during generation stage
-add_custom_target(gendbg ALL
+add_custom_target(destination_dbg ALL
   COMMAND ${CMAKE_COMMAND} -E echo \"COMPILE_DEFINITIONS: $<TARGET_PROPERTY:destination,COMPILE_DEFINITIONS>\"
   COMMAND ${CMAKE_COMMAND} -E echo \"COMPILE_OPTIONS: $<TARGET_PROPERTY:destination,COMPILE_OPTIONS>\"
   COMMAND ${CMAKE_COMMAND} -E echo \"LIB_VERSION: $<TARGET_PROPERTY:destination,LIB_VERSION>\"
@@ -86,3 +86,28 @@ add_custom_command(OUTPUT constant.h
 add_custom_command(TARGET custom_command POST_BUILD
                    COMMAND cksum
                    ARGS "$<TARGET_FILE:custom_command>" > "custom_command.ck")
+
+# genexes
+# 1. use add_custom_target to print
+add_custom_target(gendbg ALL
+  COMMAND ${CMAKE_COMMAND} -E echo \"nested genexes: $<UPPER_CASE:$<PLATFORM_ID>>\"
+)
+set(myvar1 "small text")
+set(myvar2 "small > text")
+# 2. use file command to output
+file(GENERATE OUTPUT output_log CONTENT
+"CONFIG: $<IF:$<CONFIG:Debug>,Debug,Release>\n\
+PLATFORM: $<PLATFORM_ID>\n\
+TARGET_NAME_IF_EXISTS: $<TARGET_NAME_IF_EXISTS:efa>\n\
+TARGET_FILE: $<TARGET_FILE:efa>\n\
+TARGET_FILE_DIR: $<TARGET_FILE_DIR:efa>\n\
+$<UPPER_CASE:${myvar1}>\n\
+$<UPPER_CASE:${myvar2}>\n\
+-1 $<0:TRUE>\n\
+-2 $<1:TRUE>\n\
+-3 $<0:TRUE,FALSE>(won't work)\n\
+-4 $<1:TRUE,FALSE>(won't work)\n\
+-5 $<IF:0,TRUE,FALSE>\n\
+-6 $<IF:0,TRUE,>\n\
+"
+)
