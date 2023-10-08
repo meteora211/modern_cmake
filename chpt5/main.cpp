@@ -1,5 +1,4 @@
-#include <iostream>
-#include <configured/configure.h>
+#include "configured/configure.h"
 #define str(s) #s
 #define xstr(s) str(s)
 

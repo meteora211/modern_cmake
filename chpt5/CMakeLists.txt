@@ -14,7 +14,7 @@ set(VAR 8)
 
 # PREPROCESS:
 # 1 set target include directory
-target_include_directories(main SYSTEM PRIVATE
+target_include_directories(main PRIVATE
   ${CMAKE_SOURCE_DIR}
   ${CMAKE_BINARY_DIR})
 
@@ -34,3 +34,17 @@ set(FOO_ENABLE ON)
 set(FOO_ENABLE1 "enable1_abc")
 set(FOO_ENABLE2 "enable2_def")
 configure_file(configure.h.in configured/configure.h)
+
+# Configure optimizer
+target_compile_options(main PRIVATE -O3 -Wall -Werror)
+
+# Manage compilation
+# 1 reduce compile time
+target_precompile_headers(main PRIVATE <iostream>)
+
+# 2 debugging
+# add compile options via set_target_properties
+get_target_property(PROP main COMPILE_OPTIONS)
+# -H and -save-temps
+set_target_properties(main PROPERTIES
+  COMPILE_OPTIONS "${PROP};-H;-save-temps=obj")
