@@ -1,0 +1,4 @@
+#cmakedefine FOO_ENABLE
+#cmakedefine FOO_ENABLE1 "@FOO_ENABLE1@"
+#cmakedefine FOO_ENABLE2 "${FOO_ENABLE2}"
+#cmakedefine FOO_UNDEFINED "@FOO_UNDEFINED@"
