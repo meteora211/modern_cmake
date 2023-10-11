@@ -73,4 +73,7 @@ elseif (COMPILE_YAML STREQUAL "fetch")
   )
   FetchContent_MakeAvailable(external-yaml-cpp)
   target_link_libraries(yaml_fetch PRIVATE yaml-cpp)
+  include(CMakePrintHelpers)
+  cmake_print_properties(TARGETS yaml-cpp
+    PROPERTIES TYPE SOURCE_DIR)
 endif()
