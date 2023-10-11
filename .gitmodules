@@ -1,0 +1,3 @@
+[submodule "chpt7/extern/yaml-cpp"]
+	path = chpt7/extern/yaml-cpp
+	url = https://github.com/jbeder/yaml-cpp.git
