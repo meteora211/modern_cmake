@@ -42,5 +42,8 @@ list(APPEND CMAKE_MODULE_PATH ${catch2_SOURCE_DIR}/extras)
 include(Catch)
 catch_discover_tests(catch2_test)
 
+include(Coverage)
+AddCoverage(gtest_test)
+
 include(GoogleTest)
 gtest_discover_tests(gtest_test)
