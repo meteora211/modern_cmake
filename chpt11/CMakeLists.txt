@@ -13,3 +13,14 @@ export(TARGETS calc
   FILE "${EXPORT_DIR}/CalcTargets.cmake"
   NAMESPACE Calc::
   )
+
+#install lib. Note that PUBLIC_HEADER is defined as target_property before
+install(TARGETS calc
+  ARCHIVE DESTINATION "${CMAKE_SOURCE_DIR}/install/lib"
+  PUBLIC_HEADER DESTINATION "${CMAKE_SOURCE_DIR}/install/include")
+
+#install files
+install(FILES
+  src/rng.h
+  DESTINATION "${CMAKE_SOURCE_DIR}/install/include"
+  )
