@@ -14,13 +14,38 @@ export(TARGETS calc
   NAMESPACE Calc::
   )
 
-#install lib. Note that PUBLIC_HEADER is defined as target_property before
-install(TARGETS calc
-  ARCHIVE DESTINATION "${CMAKE_SOURCE_DIR}/install/lib"
-  PUBLIC_HEADER DESTINATION "${CMAKE_SOURCE_DIR}/install/include")
+set(USE_INCLUDE_DIR 1)
+if(NOT ${USE_INCLUDE_DIR})
+  #install lib. Note that PUBLIC_HEADER is defined as target_property before
+  install(TARGETS calc
+    ARCHIVE DESTINATION "${CMAKE_SOURCE_DIR}/install/lib"
+    PUBLIC_HEADER DESTINATION "${CMAKE_SOURCE_DIR}/install/include")
 
-#install files
-install(FILES
-  src/rng.h
-  DESTINATION "${CMAKE_SOURCE_DIR}/install/include"
+  #install files
+  install(FILES
+    src/rng.h
+    DESTINATION "${CMAKE_SOURCE_DIR}/install/include"
+    )
+
+else()
+  install(TARGETS calc
+    ARCHIVE DESTINATION "${CMAKE_SOURCE_DIR}/install/lib")
+  # install dir
+  set(CMAKE_INSTALL_INCLUDEDIR "${CMAKE_SOURCE_DIR}/install/include")
+  install(DIRECTORY src/ TYPE INCLUDE
+    # DESTINATION "${CMAKE_SOURCE_DIR}/install/include"
+    FILES_MATCHING PATTERN "*.h"
+    PATTERN "ignored" EXCLUDE
+    )
+endif()
+
+# data/ -> ./install/data.csv
+# data -> ./install/data/data.csv
+install(DIRECTORY data/ DESTINATION  "${CMAKE_SOURCE_DIR}/install")
+
+set(CMAKE_INSTALL_SYSCONFDIR "${CMAKE_SOURCE_DIR}/install/conf")
+install(DIRECTORY config/ TYPE SYSCONF DIRECTORY_PERMISSIONS
+  OWNER_READ OWNER_WRITE OWNER_EXECUTE
+  PATTERN "no_exe_permission.conf" PERMISSIONS 
+  OWNER_READ OWNER_WRITE 
   )
