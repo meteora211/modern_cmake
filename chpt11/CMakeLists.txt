@@ -7,17 +7,19 @@ enable_testing()
 add_subdirectory(src bin)
 add_subdirectory(test)
 
-set(EXPORT_DIR "${CMAKE_CURRENT_BINARY_DIR}/cmake")
 
-export(TARGETS calc
-  FILE "${EXPORT_DIR}/CalcTargets.cmake"
-  NAMESPACE Calc::
-  )
+# Generate cmake file under build
+# use cat ./build/cmake/CalcTargets.cmake to show the content
+# set(EXPORT_DIR "${CMAKE_CURRENT_BINARY_DIR}/cmake")
+# export(TARGETS calc
+#   FILE "${EXPORT_DIR}/CalcTargets.cmake"
+#   NAMESPACE Calc::
+#   )
 
 set(USE_INCLUDE_DIR 1)
 if(NOT ${USE_INCLUDE_DIR})
   #install lib. Note that PUBLIC_HEADER is defined as target_property before
-  install(TARGETS calc
+  install(TARGETS calc EXPORT CalcTargets
     ARCHIVE DESTINATION "${CMAKE_SOURCE_DIR}/install/lib"
     PUBLIC_HEADER DESTINATION "${CMAKE_SOURCE_DIR}/install/include")
 
@@ -27,8 +29,9 @@ if(NOT ${USE_INCLUDE_DIR})
     DESTINATION "${CMAKE_SOURCE_DIR}/install/include"
     )
 
+
 else()
-  install(TARGETS calc
+  install(TARGETS calc EXPORT CalcTargets
     ARCHIVE DESTINATION "${CMAKE_SOURCE_DIR}/install/lib")
   # install dir
   set(CMAKE_INSTALL_INCLUDEDIR "${CMAKE_SOURCE_DIR}/install/include")
@@ -38,6 +41,11 @@ else()
     PATTERN "ignored" EXCLUDE
     )
 endif()
+
+#install export
+install(EXPORT CalcTargets
+  DESTINATION  "${CMAKE_SOURCE_DIR}/install/cmake"
+  NAMESPACE Calc::)
 
 # data/ -> ./install/data.csv
 # data -> ./install/data/data.csv
@@ -49,3 +57,6 @@ install(DIRECTORY config/ TYPE SYSCONF DIRECTORY_PERMISSIONS
   PATTERN "no_exe_permission.conf" PERMISSIONS 
   OWNER_READ OWNER_WRITE 
   )
+
+install(FILES CalcConfig.cmake DESTINATION
+    "${CMAKE_SOURCE_DIR}/install/cmake")
