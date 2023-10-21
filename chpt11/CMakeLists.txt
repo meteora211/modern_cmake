@@ -89,3 +89,8 @@ else()
     DESTINATION "${INSTALL_DIR}/calc/cmake"
     )
 endif()
+
+set(CPACK_PACKAGE_VENDOR "zhaoruic")
+set(CPACK_PACKAGE_CONTACT "email@example.com")
+set(CPACK_PACKAGE_DESCRIPTION "Simple Calculator")
+include(CPack)
