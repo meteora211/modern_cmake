@@ -8,3 +8,7 @@ cmake --install `pwd`/build
 cmake -B `pwd`/find_package/build -S `pwd`/find_package -DCMAKE_PREFIX_PATH=`pwd`/../install/
 
 tree ../install
+
+cd `pwd`/build
+cpack -G "ZIP;7Z;DEB" -B packages
+tree packages
