@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.20)
-project(Tests LANGUAGES CXX)
+project(Tests VERSION 1.2.3 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 14)
 
@@ -66,21 +66,26 @@ install(DIRECTORY config/ TYPE SYSCONF DIRECTORY_PERMISSIONS
   )
 
 
+include(CMakePackageConfigHelpers)
+write_basic_package_version_file(
+  "${CMAKE_CURRENT_BINARY_DIR}/CalcConfigVersion.cmake"
+  COMPATIBILITY AnyNewerVersion
+  )
 set(USE_BASIC_CONFIG 0)
 if(${USE_BASIC_CONFIG})
-  install(FILES CalcConfig.cmake DESTINATION
-    "${INSTALL_DIR}/calc/cmake")
+  install(FILES CalcConfig.cmake
+    "${CMAKE_CURRENT_BINARY_DIR}/CalcConfigVersion.cmake"
+    DESTINATION "${INSTALL_DIR}/calc/cmake")
 else()
-  include(CMakePackageConfigHelpers)
   set(CMAKE_INSTALL_DIR "${INSTALL_DIR}/calc/")
   configure_package_config_file(
     ${CMAKE_CURRENT_SOURCE_DIR}/CalcConfig.cmake.in
-    ${CMAKE_CURRENT_BINARY_DIR}/CalcConfigGen.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/CalcConfig.cmake
     INSTALL_DESTINATION "${INSTALL_DIR}/calc/cmake"
     PATH_VARS CMAKE_INSTALL_DIR
     )
-  install(FILES "${CMAKE_CURRENT_BINARY_DIR}/CalcConfigGen.cmake" DESTINATION
-    "${INSTALL_DIR}/calc/cmake"
-    RENAME CalcConfig.cmake
+  install(FILES "${CMAKE_CURRENT_BINARY_DIR}/CalcConfig.cmake"
+    "${CMAKE_CURRENT_BINARY_DIR}/CalcConfigVersion.cmake"
+    DESTINATION "${INSTALL_DIR}/calc/cmake"
     )
 endif()

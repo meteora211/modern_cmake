@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.20.0)
 project(FINDCalcPackage CXX)
 
-find_package(Calc REQUIRED)
+find_package(Calc 1.2.0 REQUIRED)
 
 include(CMakePrintHelpers)
 message("CMAKE_PREFIX_PATH: " ${CMAKE_PREFIX_PATH})
