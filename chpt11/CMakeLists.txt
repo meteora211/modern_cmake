@@ -3,10 +3,19 @@ project(Tests LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 14)
 
+find_package(Git)
+execute_process(COMMAND ${GIT_EXECUTABLE} rev-parse --show-toplevel
+  OUTPUT_VARIABLE GIT_ROOT
+  OUTPUT_STRIP_TRAILING_WHITESPACE
+  )
+set(INSTALL_DIR "${GIT_ROOT}/install")
+message(STATUS "Set install_dir git root: ${INSTALL_DIR}")
+
 enable_testing()
 add_subdirectory(src bin)
 add_subdirectory(test)
-
+# enable CMAKE_INSTALL_LIBDIR, etc.
+# include(GNUInstallDirs)
 
 # Generate cmake file under build
 # use cat ./build/cmake/CalcTargets.cmake to show the content
@@ -20,23 +29,21 @@ set(USE_INCLUDE_DIR 1)
 if(NOT ${USE_INCLUDE_DIR})
   #install lib. Note that PUBLIC_HEADER is defined as target_property before
   install(TARGETS calc EXPORT CalcTargets
-    ARCHIVE DESTINATION "${CMAKE_SOURCE_DIR}/install/lib"
-    PUBLIC_HEADER DESTINATION "${CMAKE_SOURCE_DIR}/install/include")
+    ARCHIVE DESTINATION "${INSTALL_DIR}/calc/lib"
+    PUBLIC_HEADER DESTINATION "${INSTALL_DIR}/calc/include")
 
   #install files
   install(FILES
     src/rng.h
-    DESTINATION "${CMAKE_SOURCE_DIR}/install/include"
+    DESTINATION "${INSTALL_DIR}/calc/include"
     )
-
-
 else()
   install(TARGETS calc EXPORT CalcTargets
-    ARCHIVE DESTINATION "${CMAKE_SOURCE_DIR}/install/lib")
+    ARCHIVE DESTINATION "${INSTALL_DIR}/calc/lib")
   # install dir
-  set(CMAKE_INSTALL_INCLUDEDIR "${CMAKE_SOURCE_DIR}/install/include")
+  set(CMAKE_INSTALL_INCLUDEDIR "${INSTALL_DIR}/calc/include")
   install(DIRECTORY src/ TYPE INCLUDE
-    # DESTINATION "${CMAKE_SOURCE_DIR}/install/include"
+    # DESTINATION "${INSTALL_DIR}/include"
     FILES_MATCHING PATTERN "*.h"
     PATTERN "ignored" EXCLUDE
     )
@@ -44,19 +51,36 @@ endif()
 
 #install export
 install(EXPORT CalcTargets
-  DESTINATION  "${CMAKE_SOURCE_DIR}/install/cmake"
+  DESTINATION  "${INSTALL_DIR}/calc/cmake"
   NAMESPACE Calc::)
 
 # data/ -> ./install/data.csv
 # data -> ./install/data/data.csv
-install(DIRECTORY data/ DESTINATION  "${CMAKE_SOURCE_DIR}/install")
+install(DIRECTORY data/ DESTINATION  "${INSTALL_DIR}/calc")
 
-set(CMAKE_INSTALL_SYSCONFDIR "${CMAKE_SOURCE_DIR}/install/conf")
+set(CMAKE_INSTALL_SYSCONFDIR "${INSTALL_DIR}/calc/conf")
 install(DIRECTORY config/ TYPE SYSCONF DIRECTORY_PERMISSIONS
   OWNER_READ OWNER_WRITE OWNER_EXECUTE
   PATTERN "no_exe_permission.conf" PERMISSIONS 
   OWNER_READ OWNER_WRITE 
   )
 
-install(FILES CalcConfig.cmake DESTINATION
-    "${CMAKE_SOURCE_DIR}/install/cmake")
+
+set(USE_BASIC_CONFIG 0)
+if(${USE_BASIC_CONFIG})
+  install(FILES CalcConfig.cmake DESTINATION
+    "${INSTALL_DIR}/calc/cmake")
+else()
+  include(CMakePackageConfigHelpers)
+  set(CMAKE_INSTALL_DIR "${INSTALL_DIR}/calc/")
+  configure_package_config_file(
+    ${CMAKE_CURRENT_SOURCE_DIR}/CalcConfig.cmake.in
+    ${CMAKE_CURRENT_BINARY_DIR}/CalcConfigGen.cmake
+    INSTALL_DESTINATION "${INSTALL_DIR}/calc/cmake"
+    PATH_VARS CMAKE_INSTALL_DIR
+    )
+  install(FILES "${CMAKE_CURRENT_BINARY_DIR}/CalcConfigGen.cmake" DESTINATION
+    "${INSTALL_DIR}/calc/cmake"
+    RENAME CalcConfig.cmake
+    )
+endif()
