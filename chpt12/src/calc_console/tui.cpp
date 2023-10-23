@@ -1,7 +1,7 @@
 #include "tui.h"
-#include <ftxui/dom/elements.hpp>
 #include "buildinfo.h"
 #include "calc/calc.h"
+#include <ftxui/dom/elements.hpp>
 
 using namespace ftxui;
 using namespace std;
